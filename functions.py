@@ -1,7 +1,7 @@
 import cv2
 import numpy as np
-
-def watermarker(watermark, image, alpha,posH, posW):
+import tinify
+def watermarker(watermark, image, alpha, posH, posW):
     (wH, wW) = watermark.shape[:2]
     (B, G, R, A) = cv2.split(watermark)
     B = cv2.bitwise_and(B, B, mask=A)
@@ -65,6 +65,7 @@ def watermarker(watermark, image, alpha,posH, posW):
 
     return new_image
 
+
 def low_opacity_borderer(image, percent, alpha, greyness=1.0):
     greyness_255 = greyness * 255
     greyness_255 = np.dtype(np.uint8).type(greyness_255)
@@ -101,3 +102,12 @@ def blurer(image, percent, kernel_size=(5, 5)):
     black_image[end_height:, :] = new_image[end_height:, :]
     black_image[:, end_width:] = new_image[:, end_width:]
     return black_image
+
+
+def set_tinify_key(key):
+    tinify.key = key
+
+
+def compressor(input_path):
+    source = tinify.from_file(input_path)
+    return source

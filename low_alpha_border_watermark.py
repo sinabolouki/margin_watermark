@@ -4,6 +4,7 @@ import cv2
 import numpy as np
 from imutils import paths
 from functions import *
+import tinify
 
 parser = argparse.ArgumentParser()
 parser.add_argument("-w", "--watermark", required=True,
@@ -24,6 +25,10 @@ parser.add_argument("-wr", "--watermarkratio", type=float, default=0.01,
                     help="ratio of space between watermark and border to picture size")
 parser.add_argument("-s", "--size", type=float, default=0.2,
                     help="ratio of size of watermark to image size")
+parser.add_argument("-c", "--compress", type=bool, default=False,
+                    help="compress or not")
+parser.add_argument("-k", "--key", type=str, default="kkkjgRvpZ75MJ470Fn9Cxfr5MG59ShdM",
+                    help="tinify register key")
 arg = vars(parser.parse_args())
 
 
@@ -36,9 +41,13 @@ greyness = arg["greyness"]
 border_ratio = arg["borderratio"]
 watermark_ratio = arg["watermarkratio"]
 watermark_size = arg["size"]
+is_compress = arg["compress"]
+key = arg["key"]
 
 watermark = cv2.imread(watermark_path, cv2.IMREAD_UNCHANGED)
 (wH, wW) = watermark.shape[:2]
+if is_compress:
+    set_tinify_key(key)
 print(watermark.shape)
 for imagePath in paths.list_images(input_path):
     # load the input image, then add an extra dimension to the
@@ -60,3 +69,6 @@ for imagePath in paths.list_images(input_path):
     filename = imagePath[imagePath.rfind(os.path.sep) + 1:]
     p = os.path.sep.join((output_path, filename))
     cv2.imwrite(p, new_image)
+    if is_compress:
+        image = compressor(p)
+        image.to_file(p)
