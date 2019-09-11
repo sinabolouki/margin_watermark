@@ -111,3 +111,9 @@ def set_tinify_key(key):
 def compressor(input_path):
     source = tinify.from_file(input_path)
     return source
+
+def w_background_darker(image, max_needed):
+    max_pix = np.max(image)
+    diff = max_pix - max_needed
+    image[image > max_needed] -= diff
+    return image
