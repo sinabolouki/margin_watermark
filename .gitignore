@@ -4,3 +4,5 @@ __pycache__/
 *.png
 *.jpg
 s
+input/
+output/
