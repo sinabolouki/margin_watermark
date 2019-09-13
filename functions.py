@@ -112,6 +112,7 @@ def compressor(input_path):
     source = tinify.from_file(input_path)
     return source
 
+
 def w_background_darker(image, max_needed):
     max_pix = np.max(image)
     diff = max_pix - max_needed
