@@ -1,10 +1,9 @@
 import argparse
 import os
-import cv2
-import numpy as np
+
 from imutils import paths
+
 from functions import *
-import tinify
 
 parser = argparse.ArgumentParser()
 parser.add_argument("-w", "--watermark", required=True,
@@ -17,7 +16,7 @@ parser.add_argument("-wa", "--watermarkalpha", type=float, default=0.25,
                     help="alpha transparency of watermark between 0.0 and 1.0 (smaller is more transparent)")
 parser.add_argument("-ba", "--borderalpha", type=float, default=0.5,
                     help="alpha transparency of border between 0.0 and 1.0 (smaller is more transparent)")
-parser.add_argument("-g", "--greyness", type = float, default=1.0,
+parser.add_argument("-g", "--greyness", type=float, default=1.0,
                     help="greyness of border between 0.0 and 1.0 (smaller is darker)")
 parser.add_argument("-br", "--borderratio", type=float, default=0.05,
                     help="ratio of border to picture size")
@@ -29,8 +28,9 @@ parser.add_argument("-c", "--compress", type=bool, default=False,
                     help="compress or not")
 parser.add_argument("-k", "--key", type=str, default="kkkjgRvpZ75MJ470Fn9Cxfr5MG59ShdM",
                     help="tinify register key")
+parser.add_argument("-d", "--darken", type=bool, default=False, help="darken background")
+parser.add_argument("-da", "--darkamount", type=int, default=230, help="maximum pixel number")
 arg = vars(parser.parse_args())
-
 
 watermark_path = arg["watermark"]
 input_path = arg["input"]
@@ -43,6 +43,8 @@ watermark_ratio = arg["watermarkratio"]
 watermark_size = arg["size"]
 is_compress = arg["compress"]
 key = arg["key"]
+dark = arg["darken"]
+dark_num = arg["darkamount"]
 
 watermark = cv2.imread(watermark_path, cv2.IMREAD_UNCHANGED)
 (wH, wW) = watermark.shape[:2]
@@ -66,9 +68,12 @@ for imagePath in paths.list_images(input_path):
     # then add the watermark to the overlay in the bottom-right
     # corner
     new_image = watermarker(watermark_resized, bordered_image, watermark_alpha, posH, posW)
+    if dark:
+        new_image = w_background_darker(new_image, dark_num)
     filename = imagePath[imagePath.rfind(os.path.sep) + 1:]
     p = os.path.sep.join((output_path, filename))
     cv2.imwrite(p, new_image)
     if is_compress:
         image = compressor(p)
         image.to_file(p)
+

@@ -8,34 +8,11 @@ def watermarker(watermark, image, alpha, posH, posW):
     G = cv2.bitwise_and(G, G, mask=A)
     R = cv2.bitwise_and(R, R, mask=A)
     watermark = cv2.merge([B, G, R, A])
-    # (h, w) = image.shape[:2]
-    # watermark_new = watermark.copy()
-    # if image.mean() < 100:
-    #     watermark_new[0: wH, 0:wW, 0:3] = 255 - watermark_new[0: wH, 0:wW, 0: 3]
-    #     print("changed")
-    # image = np.dstack([image, np.ones((h, w), dtype="uint8") * 255])
-    # overlay = np.zeros((h, w, 4), dtype="uint8")
-    # overlay[posH: wH + posH, posW: wW + posW] = watermark_new
-    # alpha_255 = alpha * 255
-    # alpha_255 = np.dtype(np.uint8).type(alpha_255)
-    #
-    # c = image[overlay[:, :, 3] == 255]
-    # c = c.astype(float)
-    # c *= (1 - alpha)
-    # c = c.astype(np.uint8)
-    # image[overlay[:, :, 3] == 255] = c
-    # # print(image[overlay[:, :, 3] == 255])
-    # d = image[overlay[:, :, 3] == 255]
-    # d = d.astype(float)
-    # d *= alpha
-    # d = d.astype(float)
-    # overlay[overlay[:, :, 3] == 255] = d
-    # overlay[overlay[:, :, 3] == 0] = [0, 0, 0, 255]
-    # new_image = cv2.add(image, overlay)
 
     (h, w) = image.shape[:2]
     watermark_new = watermark.copy()
-    if image.mean() < 100:
+    w_bg_mean = image[posH: wH + posH, posW: wW + posW].mean()
+    if w_bg_mean < 100:
         watermark_new[0: wH, 0:wW, 0:3] = 255 - watermark_new[0: wH, 0:wW, 0: 3]
         print("changed")
     image = np.dstack([image, np.ones((h, w), dtype="uint8") * 255])
